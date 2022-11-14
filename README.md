@@ -1,3 +1,4 @@
 # pixelart
-this is a simple pixel artprogram to use in site or download and open with a browser
+this is a simple pixel art 
+program to use in site or download and open with a browser
 
