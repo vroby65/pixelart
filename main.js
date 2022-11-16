@@ -1,5 +1,5 @@
 function _np_create(){
-const newFileReader = document.createElement('input');
+	const newFileReader = document.createElement('input');
 	newFileReader.type='file';
 	newFileReader.id='file-np-input';
 	newFileReader.style.display='none';
@@ -37,7 +37,6 @@ function displayNPContents(contents) {
     			}
             }
 }
-
 
 function NPdownload(data, filename, type) {
 	var file = new Blob([data], {type: type});
@@ -80,8 +79,6 @@ function carica(){
     _np_load();          
 }
  
-
-
 
 setdisplay(600,400);
 cls(display,0);
@@ -138,9 +135,5 @@ function update() {
           	var y =parseInt( (mouseY -50) /10)-1;
 	    	color=getpixel( display, 50+(x*10), 50+(y*10) ) ;
         } 
-    }
-   
-  
-  
-  
+    }  
 }
