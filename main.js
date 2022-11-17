@@ -136,4 +136,5 @@ function update() {
 	    	color=getpixel( display, 50+(x*10), 50+(y*10) ) ;
         } 
     }  
+	bar(400,10,40,40,color);	
 }
