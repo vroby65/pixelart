@@ -1,3 +1,8 @@
+var dx=32;
+var dy=32;
+var image=Array();
+document.body.style.cursor = 'crosshair';
+
 function _np_create(){
 	const newFileReader = document.createElement('input');
 	newFileReader.type='file';
@@ -29,13 +34,17 @@ function readNPSingleFile(e) {
 }
 
 function displayNPContents(contents) {
-	data = contents;
+   data = contents;
+   image='';
    image=data.split(';');
-          for( y= 0 ;y<32;y++){
-			for(x=0;x<32;x++){
-    				bar( display, 50+(x*10), 50+(y*10),8,8,image[y*32+x])
-    			}
-            }
+   dx=image[0];
+   dy=image[1];
+   bar(display,50,50,320,320,'black');
+	for( y= 0 ;y<dy;y++){
+		for(x=0;x<dx;x++){
+			bar( display, 50+(x*(320/dx)), 50+(y*(320/dy)),320/dx-2,320/dy-2,image[y*dx+x+2])
+		}
+	}
 }
 
 function NPdownload(data, filename, type) {
@@ -56,19 +65,29 @@ function NPdownload(data, filename, type) {
 	}
 }
 
+function risoluzione(x,y){
+	dx=x;
+	dy=y;
+	bar(display,50,50,320,320,'black');
+	cancella();
+}
+
 function cancella(){
-	for( y= 0 ;y<32;y++){
-		for(x=0;x<32;x++){
-    		bar( display, 50+(x*10), 50+(y*10),8,8,rgb(255,255,255))
+	for( y= 0 ;y<dy;y++){
+		for(x=0;x<dx;x++){
+    		bar( display, 50+(x*(320/dx)), 50+(y*(320/dy)),320/dx-2,320/dy-2,rgb(255,255,255));
+    		image[y*dx+x]='white';
     	}
     }
 }
 
 function salva(){
 	data='';
-    for( y= 0 ;y<32;y++){
-		for(x=0;x<32;x++){
-    		data=data+image[y*32+x]+';';
+	data=dx+';';
+	data=data+dy+';';
+    for( y= 0 ;y<dy;y++){
+		for(x=0;x<dy;x++){
+    		data=data+image[y*dx+x]+';';
     	}
     }
     NPdownload(data,"file.pixelart",'text');
@@ -83,11 +102,10 @@ function carica(){
 setdisplay(600,400);
 cls(display,0);
 
-var image=Array();
-for( y= 0 ;y<32;y++){
-	for(x=0;x<32;x++){
-    	bar( display, 50+(x*10), 50+(y*10),8,8,rgb(255,255,255))
-        image[y*32+x]='white';
+for( y= 0 ;y<dy;y++){
+	for(x=0;x<dx;x++){
+    	bar( display, 50+(x*(320/dx)), 50+(y*(320/dy)),320/dx-2,320/dy-2,rgb(255,255,255))
+        image[y*dx+x]='white';
     }
 }
 
@@ -120,20 +138,32 @@ color=(rgb(255,0,0));
 var data='';
 function update() {
   
-	if(mousezone(56,56,320,320)){
-   		if (mouseB == 1){
-          	var x =parseInt( (mouseX -46) /10)-1;
-          	var y =parseInt( (mouseY -46) /10)-1;
-	    	bar( display, 50+(x*10), 50+(y*10),8,8,color ) ;
-	        image[y*32+x]=color;
-        } 
-    }
+	if (dx==16){
+		if(mousezone(50,50,320,320)){
+			if (mouseB == 1){
+				var x =parseInt((mouseX - 50 - (80/dx))/(320/dx));
+				var y =parseInt((mouseY - 50 - (80/dy))/(320/dy));
+				bar( display, 50+(x*(320/dx)), 50+(y*(320/dy)),320/dx-2,320/dx-2,color ) ;
+				image[y*dx+x]=color;
+			}
+		}
+	}
+	else{
+		if(mousezone(50,50,320+(320/dx),320+(320/dy))){
+			if (mouseB == 1){
+				var x =parseInt((mouseX - 50 - (320/dx))/(320/dx));
+				var y =parseInt((mouseY - 50 - (320/dy))/(320/dy));
+				bar( display, 50+(x*(320/dx)), 50+(y*(320/dy)),320/dx-2,320/dx-2,color ) ;
+				image[y*dx+x]=color;
+			}
+		}
+	 }
 
  	if(mousezone(450,50,160,320)){
    		if (mouseB == 1){
-          	var x =parseInt( (mouseX -50) /10)-1;
-          	var y =parseInt( (mouseY -50) /10)-1;
-	    	color=getpixel( display, 50+(x*10), 50+(y*10) ) ;
+          	var x =parseInt((mouseX -50) /10)-1;
+          	var y =parseInt((mouseY -50) /10)-1;
+	    	color=getpixel(display, 50+(x*10), 50+(y*10));
         } 
     }  
 	bar(display,400,10,40,40,color);	
