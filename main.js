@@ -3,6 +3,9 @@ var dy=32;
 var image=Array();
 document.body.style.cursor = 'crosshair';
 
+
+
+
 function saveImage(){
   var s=createsurface(320,320);
   blt(s,0,0,320,320,display,49,49,320,320);
