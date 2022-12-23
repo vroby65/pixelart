@@ -116,7 +116,7 @@ bcolor[2]='blue';
 bcolor[3]='fuchsia';	
 bcolor[4]='gray';	
 bcolor[5]='green';	
-bcolor[6]='orange';	
+bcolor[6]='lime';	
 bcolor[7]='maroon';	
 bcolor[8]='navy';	
 bcolor[9]='olive';
@@ -126,19 +126,31 @@ bcolor[12]='silver';
 bcolor[13]='teal';	
 bcolor[14]='white';	
 bcolor[15]='yellow';
+bcolor[16]='Tomato';
+bcolor[17]='Orange';
+bcolor[18]='DodgerBlue';
+bcolor[19]='MediumSeaGreen';
+bcolor[20]='Gray';
+bcolor[21]='SlateBlue';
+bcolor[22]='Violet';
+bcolor[23]='LightGray';
+
 
 var i=0;
 for( y= 0 ;y<8;y++){
-	for(x=0;x<2;x++){
+	for(x=0;x<3;x++){
     	bar( display, 450+(x*40), 50+(y*40),38,38,bcolor[i]);
 		i++;
     }
 }
+
 color=(rgb(255,0,0));
 var data='';
+
+
 function update() {
   
-	if (dx==16){
+	if (dx<=16){
 		if(mousezone(50,50,320,320)){
 			if (mouseB == 1){
 				var x =parseInt((mouseX - 50 - (80/dx))/(320/dx));
@@ -166,5 +178,8 @@ function update() {
 	    	color=getpixel(display, 50+(x*10), 50+(y*10));
         } 
     }  
-	bar(display,400,10,40,40,color);	
+	box(display,48,48,322,322,"white");
+	box(display,448,48,122,322,"white");
+	box(display,399,49,42,42,"white");	
+	bar(display,400,50,40,40,color);	
 }
