@@ -3,8 +3,26 @@ var dy=32;
 var image=Array();
 document.body.style.cursor = 'crosshair';
 
+function stampa(){
+	var s=createsurface(320,320);
+	blt(s,0,0,320,320,display,49,49,320,320);
+	var dataURL =s.toDataURL();
 
+	var windowContent = '<!DOCTYPE html>';
+	windowContent += '<html>';
+	windowContent += '<head><title>Print canvas</title></head>';
+	windowContent += '<body>';
+	windowContent += '<img src="' + dataURL + '">';
+	windowContent += '</body>';
+	windowContent += '</html>';
 
+	var printWin = window.open();
+	printWin.document.open();
+	printWin.document.write(windowContent);
+	printWin.document.close();
+	printWin.focus();
+	printWin.onload=function(){printWin.print();printWin.close();}
+}
 
 function saveImage(){
   var s=createsurface(320,320);
@@ -19,8 +37,6 @@ function saveCanvasAsImage(canvas) {
   a.download = 'immagine.png';
   a.click();
 }
-
-
 
 function _np_create(){
 	const newFileReader = document.createElement('input');
