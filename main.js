@@ -58,15 +58,6 @@ function saveCanvasAsImage(canvas) {
   }, "image/png");
 }
 
-/*
-function saveCanvasAsImage(canvas) {
-  const imageData = canvas.toDataURL('image/png');
-  const a = document.createElement('a');
-  a.href = imageData;
-  a.download = 'immagine.png';
-  a.click();
-}
-*/
 function _np_create(){
 	const newFileReader = document.createElement('input');
 	newFileReader.type='file';
