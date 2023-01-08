@@ -41,13 +41,32 @@ function saveImage(){
 }
 
 function saveCanvasAsImage(canvas) {
+  canvas.toBlob(function(blob) {
+    var fileContentURL = URL.createObjectURL(blob);
+    var downloadLink = document.createElement("a");
+    downloadLink.download = "nome-del-file.png";
+    downloadLink.innerHTML = "Scarica il file";
+    downloadLink.href = fileContentURL;
+    downloadLink.onclick = destroyClickedElement;
+    downloadLink.style.display = "none";
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+
+    function destroyClickedElement(event) {
+      document.body.removeChild(event.target);
+    }
+  }, "image/png");
+}
+
+/*
+function saveCanvasAsImage(canvas) {
   const imageData = canvas.toDataURL('image/png');
   const a = document.createElement('a');
   a.href = imageData;
   a.download = 'immagine.png';
   a.click();
 }
-
+*/
 function _np_create(){
 	const newFileReader = document.createElement('input');
 	newFileReader.type='file';
