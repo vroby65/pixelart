@@ -92,22 +92,23 @@ function displayNPContents(contents) {
 	}
 }
 
-function NPdownload(data, filename, type) {
-	var file = new Blob([data], {type: type});
-	if (window.navigator.msSaveOrOpenBlob) // IE10+
-		window.navigator.msSaveOrOpenBlob(file, filename);
-	else { // Others
-		var a = document.createElement("a");
-        url = window.URL.createObjectURL(file);
-		a.href = url;
-		a.download = filename;
-		document.body.appendChild(a);
-		a.click();
-		setTimeout(function() {
-			document.body.removeChild(a);
-			window.URL.revokeObjectURL(url);  
-		}, 0); 
-	}
+function NPdownload(textToSave, filename, type){
+	var textToSaveAsBlob = new Blob([textToSave], {type:"text/plain"});
+	var textToSaveAsURL = window.URL.createObjectURL(textToSaveAsBlob);
+
+	var downloadLink = document.createElement("a");
+	downloadLink.download = filename;
+	downloadLink.innerHTML = "Scarica il file";
+	downloadLink.href = textToSaveAsURL;
+	downloadLink.onclick = destroyClickedElement;
+	downloadLink.style.display = "none";
+
+	document.body.appendChild(downloadLink);
+	downloadLink.click();
+}
+
+function destroyClickedElement(event){
+    document.body.removeChild(event.target);
 }
 
 function risoluzione(x,y){
