@@ -2,7 +2,7 @@ var dx=32;
 var dy=32;
 var image=Array();
 document.body.style.cursor = 'crosshair';
-window.screen.orientation.lock('landscape');
+//window.screen.orientation.lock('landscape');
 
 function toggleFullScreen() {
   if (!document.fullscreenElement) {
