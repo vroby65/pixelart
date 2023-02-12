@@ -167,6 +167,7 @@ for( y= 0 ;y<dy;y++){
 }
 
 var bcolor=Array();
+/*
 bcolor[0]='aqua';	
 bcolor[1]='black';	
 bcolor[2]='blue';
@@ -191,12 +192,180 @@ bcolor[20]='Gray';
 bcolor[21]='SlateBlue';
 bcolor[22]='Violet';
 bcolor[23]='LightGray';
+*/
+bcolor[0]='AliceBlue';
+bcolor[1]='AntiqueWhite';
+bcolor[2]='Aqua';
+bcolor[3]='Aquamarine';
+bcolor[4]='Azure';
+bcolor[5]='Beige';
+bcolor[6]='Bisque';
+bcolor[7]='Black';
+bcolor[8]='BlanchedAlmond';
+bcolor[9]='Blue';
+bcolor[10]='BlueViolet';
+bcolor[11]='Brown';
+bcolor[12]='BurlyWood';
+bcolor[13]='CadetBlue';
+bcolor[14]='Chartreuse';
+bcolor[15]='Chocolate';
+bcolor[16]='Coral';
+bcolor[17]='CornflowerBlue';
+bcolor[18]='Cornsilk';
+bcolor[19]='Crimson';
+bcolor[20]='Cyan';
+bcolor[21]='DarkBlue';
+bcolor[22]='DarkCyan';
+bcolor[23]='DarkGoldenRod';
+bcolor[24]='DarkGray';
+bcolor[25]='DarkGrey';
+bcolor[26]='DarkGreen';
+bcolor[27]='DarkKhaki';
+bcolor[28]='DarkMagenta';
+bcolor[29]='DarkOliveGreen';
+bcolor[30]='DarkOrange';
+bcolor[31]='DarkOrchid';
+bcolor[32]='DarkRed';
+bcolor[33]='DarkSalmon';
+bcolor[34]='DarkSeaGreen';
+bcolor[35]='DarkSlateBlue';
+bcolor[36]='DarkSlateGray';
+bcolor[37]='DarkSlateGrey';
+bcolor[38]='DarkTurquoise';
+bcolor[39]='DarkViolet';
+bcolor[40]='DeepPink';
+bcolor[41]='DeepSkyBlue';
+bcolor[42]='DimGray';
+bcolor[43]='DimGrey';
+bcolor[44]='DodgerBlue';
+bcolor[45]='FireBrick';
+bcolor[46]='FloralWhite';
+bcolor[47]='ForestGreen';
+bcolor[48]='Fuchsia';
+bcolor[49]='Gainsboro';
+bcolor[50]='GhostWhite';
+bcolor[51]='Gold';
+bcolor[52]='GoldenRod';
+bcolor[53]='Gray';
+bcolor[54]='Grey';
+bcolor[55]='Green';
+bcolor[56]='GreenYellow';
+bcolor[57]='HoneyDew';
+bcolor[58]='HotPink';
+bcolor[59]='IndianRed';
+bcolor[60]='Indigo';
+bcolor[61]='Ivory';
+bcolor[62]='Khaki';
+bcolor[63]='Lavender';
+bcolor[64]='LavenderBlush';
+bcolor[65]='LawnGreen';
+bcolor[66]='LemonChiffon';
+bcolor[67]='LightBlue';
+bcolor[68]='LightCoral';
+bcolor[69]='LightCyan';
+bcolor[70]='LightGoldenRodYellow';
+bcolor[71]='LightGray';
+bcolor[72]='LightGrey';
+bcolor[73]='LightGreen';
+bcolor[74]='LightPink';
+bcolor[75]='LightSalmon';
+bcolor[76]='LightSeaGreen';
+bcolor[77]='LightSkyBlue';
+bcolor[78]='LightSlateGray';
+bcolor[79]='LightSlateGrey';
+bcolor[80]='LightSteelBlue';
+bcolor[81]='LightYellow';
+bcolor[82]='Lime';
+bcolor[83]='LimeGreen';
+bcolor[84]='Linen';
+bcolor[85]='Magenta';
+bcolor[86]='Maroon';
+bcolor[87]='MediumAquaMarine';
+bcolor[88]='MediumBlue';
+bcolor[89]='MediumOrchid';
+bcolor[90]='MediumPurple';
+bcolor[91]='MediumSeaGreen';
+bcolor[92]='MediumSlateBlue';
+bcolor[93]='MediumSpringGreen';
+bcolor[94]='MediumTurquoise';
+bcolor[95]='MediumVioletRed';
+bcolor[96]='MidnightBlue';
+bcolor[97]='MintCream';
+bcolor[98]='MistyRose';
+bcolor[99]='Moccasin';
+bcolor[100]='NavajoWhite';
+bcolor[101]='Navy';
+bcolor[102]='OldLace';
+bcolor[103]='Olive';
+bcolor[104]='OliveDrab';
+bcolor[105]='Orange';
+bcolor[106]='OrangeRed';
+bcolor[107]='Orchid';
+bcolor[108]='PaleGoldenRod';
+bcolor[109]='PaleGreen';
+bcolor[110]='PaleTurquoise';
+bcolor[111]='PaleVioletRed';
+bcolor[112]='PapayaWhip';
+bcolor[113]='PeachPuff';
+bcolor[114]='Peru';
+bcolor[115]='Pink';
+bcolor[116]='Plum';
+bcolor[117]='PowderBlue';
+bcolor[118]='Purple';
+bcolor[119]='RebeccaPurple';
+bcolor[120]='Red';
+bcolor[121]='RosyBrown';
+bcolor[122]='RoyalBlue';
+bcolor[123]='SaddleBrown';
+bcolor[124]='Salmon';
+bcolor[125]='SandyBrown';
+bcolor[126]='SeaGreen';
+bcolor[127]='SeaShell';
+bcolor[128]='Sienna';
+bcolor[129]='Silver';
+bcolor[130]='SkyBlue';
+bcolor[131]='SlateBlue';
+bcolor[132]='SlateGray';
+bcolor[133]='SlateGrey';
+bcolor[134]='Snow';
+bcolor[135]='SpringGreen';
+bcolor[136]='SteelBlue';
+bcolor[137]='Tan';
+bcolor[138]='Teal';
+bcolor[139]='Thistle';
+bcolor[140]='Tomato';
+bcolor[141]='Turquoise';
+bcolor[142]='Violet';
+bcolor[143]='Wheat';
+bcolor[144]='White';
+bcolor[145]='Color Mixer';
+bcolor[146]='Color Picker';
+bcolor[147]='WhiteSmoke';
+bcolor[148]='Yellow';
+bcolor[149]='YellowGreen';
+bcolor[150]='#ff0000';
+bcolor[151]='#00ff00';
+bcolor[152]='#0000ff';
+bcolor[153]='#ff00ff';
+bcolor[154]='#00ffff';
+bcolor[155]='#ffff00';
+bcolor[156]='#800000';
+bcolor[157]='#008000';
+bcolor[158]='#000080';
+bcolor[159]='#800080';
+
+
+
+
+
+
+
 
 
 var i=0;
-for( y= 0 ;y<8;y++){
-	for(x=0;x<3;x++){
-    	bar( display, 450+(x*40), 50+(y*40),38,38,bcolor[i]);
+for( y= 0 ;y<20;y++){
+	for(x=0;x<8;x++){
+    	bar( display, 450+(x*13), 50+(y*13),11,11,bcolor[i]);
 		i++;
     }
 }
@@ -228,15 +397,16 @@ function update() {
 		}
 	 }
 
- 	if(mousezone(450,50,160,320)){
+ 	if(mousezone(450,50,106,263)){
    		if (mouseB == 1){
-          	var x =parseInt((mouseX -50) /10)-1;
-          	var y =parseInt((mouseY -50) /10)-1;
-	    	color=getpixel(display, 50+(x*10), 50+(y*10));
+          	var x =parseInt((mouseX -450-7) /13);
+          	var y =parseInt((mouseY -50-7) /13);
+	    	color=getpixel(display, 450+(x*13), 50+(y*13));
         } 
     }  
+    
 	box(display,48,48,322,322,"white");
-	box(display,448,48,122,322,"white");
+	box(display,448,48,106,263,"white");
 	box(display,399,49,42,42,"white");	
 	bar(display,400,50,40,40,color);	
 }
