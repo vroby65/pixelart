@@ -503,9 +503,37 @@ var mouseX=0;
 var mouseY=0;
 var mouseB=0;
 
-function handleMouseMove( e){
-	mouseX = e.clientX/document.body.style.zoom;
-	mouseY = e.clientY/document.body.style.zoom;
+function handleMouseMove(e) {
+    if (isChrome()) {
+        mouseX = e.clientX / document.body.style.zoom;
+        mouseY = e.clientY / document.body.style.zoom;
+    } else {
+        mouseX = e.pageX;
+        mouseY = e.pageY;
+    }
+}
+
+function isChrome() {
+    var isChromium = window.chrome;
+    var winNav = window.navigator;
+    var vendorName = winNav.vendor;
+    var isOpera = typeof window.opr !== "undefined";
+    var isIEedge = winNav.userAgent.indexOf("Edge") > -1;
+    var isIOSChrome = winNav.userAgent.match("CriOS");
+
+    if (isIOSChrome) {
+        return true;
+    } else if (
+        isChromium !== null &&
+        typeof isChromium !== "undefined" &&
+        vendorName === "Google Inc." &&
+        isOpera === false &&
+        isIEedge === false
+    ) {
+        return true;
+    } else { 
+        return false;
+    }
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------
  
