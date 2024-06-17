@@ -505,36 +505,8 @@ var mouseB=0;
 
 function handleMouseMove(e) {
     var rect = display.getBoundingClientRect();
-    if (isChrome()) {
-        mouseX = (e.clientX - rect.left) / document.body.style.zoom+4;
-        mouseY = (e.clientY - rect.top) / document.body.style.zoom+4;
-    } else {
-        mouseX = (e.clientX - rect.left)/(document.body.style.zoom )+4;
-        mouseY = (e.clientY - rect.top)/(document.body.style.zoom )+4;
-    }
-}
-
-function isChrome() {
-    var isChromium = window.chrome;
-    var winNav = window.navigator;
-    var vendorName = winNav.vendor;
-    var isOpera = typeof window.opr !== "undefined";
-    var isIEedge = winNav.userAgent.indexOf("Edge") > -1;
-    var isIOSChrome = winNav.userAgent.match("CriOS");
-
-    if (isIOSChrome) {
-        return true;
-    } else if (
-        isChromium !== null &&
-        typeof isChromium !== "undefined" &&
-        vendorName === "Google Inc." &&
-        isOpera === false &&
-        isIEedge === false
-    ) {
-        return true;
-    } else {
-        return false;
-    }
+    mouseX = (e.clientX - rect.left) / document.body.style.zoom+7;
+    mouseY = (e.clientY - rect.top) / document.body.style.zoom+7;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------
  
