@@ -38,8 +38,39 @@ function stampa(){
 function saveImage(){
   var s=createsurface(320,320);
   blt(s,0,0,320,320,display,49,49,320,320);
-  saveCanvasAsImage(s);
+  
+  //saveCanvasAsImage(s);
+  savePng(s);
 }
+
+function savePng(canvas) {
+  var image = new Image();
+  image.src = canvas.toDataURL("image/png");
+  
+  var link = document.createElement("a");
+  link.href = image.src;
+
+  // Aggiungi la trasparenza ai pixel neri nell'immagine
+  var context = canvas.getContext("2d");
+  var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+  var data = imageData.data;
+  var brightnessThreshold = 100; // Soglia di luminosità per considerare un pixel come nero
+  for (var i = 0; i < data.length; i += 4) {
+    // Calcola la luminosità del pixel
+    var brightness = (0.2126 * data[i]) + (0.7152 * data[i + 1]) + (0.0722 * data[i + 2]);
+    if (brightness < brightnessThreshold) {
+      data[i + 3] = 0; // Imposta la trasparenza a zero per i pixel neri
+    }
+  }
+  context.putImageData(imageData, 0, 0);
+
+  link.download = "canvas.png";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+
 
 function saveCanvasAsImage(canvas) {
   canvas.toBlob(function(blob) {
@@ -96,9 +127,10 @@ function displayNPContents(contents) {
    dx=image[0];
    dy=image[1];
    bar(display,50,50,320,320,'black');
+   image.splice(0,2);
 	for( y= 0 ;y<dy;y++){
 		for(x=0;x<dx;x++){
-			bar( display, 50+(x*(320/dx)), 50+(y*(320/dy)),320/dx-2,320/dy-2,image[y*dx+x+2])
+			bar( display, 50+(x*(320/dx)), 50+(y*(320/dy)),320/dx-2,320/dy-2,image[y*dx+x])
 		}
 	}
 }
@@ -352,14 +384,8 @@ bcolor[155]='#ffff00';
 bcolor[156]='#800000';
 bcolor[157]='#008000';
 bcolor[158]='#000080';
-bcolor[159]='#800080';
-
-
-
-
-
-
-
+//bcolor[159]='#800080';
+bcolor[159]='rgba(255,0,255,1)';
 
 
 var i=0;
@@ -409,4 +435,56 @@ function update() {
 	box(display,448,48,106,263,"white");
 	box(display,399,49,42,42,"white");	
 	bar(display,400,50,40,40,color);	
+}
+
+
+function analyzeImage(){
+    var colore='';
+    var volte=0;
+    var n=0;
+   	var s=createsurface(480 ,16 * dy + 30);
+
+    text ( s, 50, 18,18, "black", "analisi Immagine");
+
+	for( y= 0 ;y<dy;y++){
+        var n=0;
+        text ( s, 5, 25+(y*16)+8, 12, 'black', y);
+        colore=image[y*dx];
+        volte=0;
+        
+		for(x=0;x<dx;x++){
+    		if (colore !=image[y*dx+x]){
+                text ( s, 50+n, 25+(y*16)+8, 12, 'black', volte);
+                n=n+16;
+                bar( s, 50+n, 25+(y*16),14,14,colore);
+                box( s, 50+n, 25+(y*16),14,14,'black');
+                n=n+ 20;
+                volte=1;
+                colore=image[y*dx+x];
+            }
+            else {
+                volte++;
+            }
+    	}
+        text ( s, 50+n, 25+(y*16)+8, 12, 'black', volte);
+        n=n+16;
+        bar( s, 50+n, 25+(y*16), 14, 14, colore);
+        box( s, 50+n, 25+(y*16), 14, 14, "black");
+    } 
+	var dataURL =s.toDataURL();
+
+	var windowContent = '<!DOCTYPE html>';
+	windowContent += '<html>';
+	windowContent += '<head><title>Print analisi</title></head>';
+	windowContent += '<body>';
+	windowContent += '<img src="' + dataURL + '">';
+	windowContent += '</body>';
+	windowContent += '</html>';
+
+	var printWin = window.open();
+	printWin.document.open();
+	printWin.document.write(windowContent);
+	printWin.document.close();
+	printWin.focus();
+	printWin.onload=function(){printWin.print();printWin.close();}
 }
