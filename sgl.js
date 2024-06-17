@@ -504,12 +504,13 @@ var mouseY=0;
 var mouseB=0;
 
 function handleMouseMove(e) {
+    var rect = display.getBoundingClientRect();
     if (isChrome()) {
-        mouseX = e.clientX / document.body.style.zoom;
-        mouseY = e.clientY / document.body.style.zoom;
+        mouseX = (e.clientX - rect.left) / document.body.style.zoom+4;
+        mouseY = (e.clientY - rect.top) / document.body.style.zoom+4;
     } else {
-        mouseX = e.pageX;
-        mouseY = e.pageY;
+        mouseX = (e.clientX - rect.left)/(document.body.style.zoom )+4;
+        mouseY = (e.clientY - rect.top)/(document.body.style.zoom )+4;
     }
 }
 
@@ -531,7 +532,7 @@ function isChrome() {
         isIEedge === false
     ) {
         return true;
-    } else { 
+    } else {
         return false;
     }
 }
