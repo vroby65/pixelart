@@ -10,10 +10,10 @@
 <meta name='viewport' content='width=device-width,initial-scale=1.0'>
 
 <title>pixelart</title>
-<script src="sgl.js"></script>
+<script src="sgl.js?v=5"></script>
 </head>
-<body style="background:black;">
-<script src="main.js"></script>
+<body style="background:black;" oncontextmenu="return false;">
+<script src="main.js?v=4"></script>
 <div style='position:absolute;top:10px;left:60px;'>
 <button onclick='cancella();'>cancella</button>
 <button onclick='carica();'  >carica</button>
@@ -21,8 +21,9 @@
 <button onclick='saveImage();'>esporta png</button>
 <button onclick='stampa();'>stampa</button>
 <button onclick='analyzeImage();'>Analizza Immagine</button>
-<font color='white'>
+<font color='white' style='cursor:pointer;'>
 <a onclick='risoluzione(8,8);'>08x08 </a>
+<a onclick='risoluzione(10,10);'>10x10 </a>
 <a onclick='risoluzione(16,16);'>16x16 </a>
 <a onclick='risoluzione(32,32);'>32x32 </a>
 <a onclick='risoluzione(64,64);'>64x64 </a>

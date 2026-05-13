@@ -1,490 +1,573 @@
-var dx=32;
-var dy=32;
-var image=Array();
+var dx = 32;
+var dy = 32;
+var image = Array();
+var data = '';
+
 document.body.style.cursor = 'crosshair';
+
+window.oncontextmenu = function(e){ e.preventDefault(); return false; };
+document.oncontextmenu = function(e){ e.preventDefault(); return false; };
+document.addEventListener('contextmenu', function(e){ e.preventDefault(); return false; }, false);
+
 //window.screen.orientation.lock('landscape');
 
+var GRID_X = 50;
+var GRID_Y = 50;
+var GRID_SIZE = 320;
+
+var PALETTE_X = 450;
+var PALETTE_Y = 50;
+var PALETTE_CELL = 18;
+var PALETTE_GAP = 2;
+var PALETTE_COLS = 10;
+var PALETTE_ROWS = 16;
+var PALETTE_W = PALETTE_COLS * (PALETTE_CELL + PALETTE_GAP) - PALETTE_GAP;
+var PALETTE_H = PALETTE_ROWS * (PALETTE_CELL + PALETTE_GAP) - PALETTE_GAP;
+
+var COLOR_BOX_X = 386;
+var COLOR_BOX_Y = 50;
+var COLOR_BOX_SIZE = 52;
+var COLOR_BOX_GAP = 82;
+
+var color = rgb(255,0,0);
+var color2 = rgb(0,0,0);
+
+var paletteColors = [];
+
 function toggleFullScreen() {
-  if (!document.fullscreenElement) {
-    document.documentElement.requestFullscreen();
-  } else {
-    if (document.exitFullscreen) {
-      document.exitFullscreen(); 
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        }
     }
-  }
 }
 
-function stampa(){
-	var s=createsurface(320,320);
-	blt(s,0,0,320,320,display,49,49,320,320);
-	var dataURL =s.toDataURL();
+function stampa() {
+    var s = createsurface(320,320);
+    blt(s,0,0,320,320,display,GRID_X,GRID_Y,GRID_SIZE,GRID_SIZE);
 
-	var windowContent = '<!DOCTYPE html>';
-	windowContent += '<html>';
-	windowContent += '<head><title>Print canvas</title></head>';
-	windowContent += '<body>';
-	windowContent += '<img src="' + dataURL + '">';
-	windowContent += '</body>';
-	windowContent += '</html>';
+    var dataURL = s.toDataURL();
 
-	var printWin = window.open();
-	printWin.document.open();
-	printWin.document.write(windowContent);
-	printWin.document.close();
-	printWin.focus();
-	printWin.onload=function(){printWin.print();printWin.close();}
+    var windowContent = '<!DOCTYPE html>';
+    windowContent += '<html>';
+    windowContent += '<head><title>Print canvas</title></head>';
+    windowContent += '<body>';
+    windowContent += '<img src="' + dataURL + '">';
+    windowContent += '</body>';
+    windowContent += '</html>';
+
+    var printWin = window.open();
+    printWin.document.open();
+    printWin.document.write(windowContent);
+    printWin.document.close();
+    printWin.focus();
+
+    printWin.onload = function(){
+        printWin.print();
+        printWin.close();
+    };
 }
 
-function saveImage(){
-  var s=createsurface(320,320);
-  blt(s,0,0,320,320,display,49,49,320,320);
-  
-  //saveCanvasAsImage(s);
-  savePng(s);
+function saveImage() {
+    var s = createsurface(320,320);
+    blt(s,0,0,320,320,display,GRID_X,GRID_Y,GRID_SIZE,GRID_SIZE);
+    savePng(s);
 }
 
 function savePng(canvas) {
-  var image = new Image();
-  image.src = canvas.toDataURL("image/png");
-  
-  var link = document.createElement("a");
-  link.href = image.src;
+    var context = canvas.getContext("2d");
+    var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+    var imgData = imageData.data;
 
-  // Aggiungi la trasparenza ai pixel neri nell'immagine
-  var context = canvas.getContext("2d");
-  var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-  var data = imageData.data;
-  var brightnessThreshold = 100; // Soglia di luminosità per considerare un pixel come nero
-  for (var i = 0; i < data.length; i += 4) {
-    // Calcola la luminosità del pixel
-    var brightness = (0.2126 * data[i]) + (0.7152 * data[i + 1]) + (0.0722 * data[i + 2]);
-    if (brightness < brightnessThreshold) {
-      data[i + 3] = 0; // Imposta la trasparenza a zero per i pixel neri
+    var brightnessThreshold = 100;
+
+    for (var i = 0; i < imgData.length; i += 4) {
+        var brightness =
+            (0.2126 * imgData[i]) +
+            (0.7152 * imgData[i + 1]) +
+            (0.0722 * imgData[i + 2]);
+
+        if (brightness < brightnessThreshold) {
+            imgData[i + 3] = 0;
+        }
     }
-  }
-  context.putImageData(imageData, 0, 0);
 
-  link.download = "canvas.png";
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+    context.putImageData(imageData, 0, 0);
+
+    var link = document.createElement("a");
+    link.href = canvas.toDataURL("image/png");
+    link.download = "canvas.png";
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
-
-
 
 function saveCanvasAsImage(canvas) {
-  canvas.toBlob(function(blob) {
-    var fileContentURL = URL.createObjectURL(blob);
-    var downloadLink = document.createElement("a");
-    downloadLink.download = "nome-del-file.png";
-    downloadLink.innerHTML = "Scarica il file";
-    downloadLink.href = fileContentURL;
-    downloadLink.onclick = destroyClickedElement;
-    downloadLink.style.display = "none";
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
+    canvas.toBlob(function(blob) {
+        var fileContentURL = URL.createObjectURL(blob);
+        var downloadLink = document.createElement("a");
 
-    function destroyClickedElement(event) {
-      document.body.removeChild(event.target);
-    }
-  }, "image/png");
+        downloadLink.download = "nome-del-file.png";
+        downloadLink.innerHTML = "Scarica il file";
+        downloadLink.href = fileContentURL;
+        downloadLink.onclick = destroyClickedElement;
+        downloadLink.style.display = "none";
+
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+
+        function destroyClickedElement(event) {
+            document.body.removeChild(event.target);
+        }
+    }, "image/png");
 }
 
-function _np_create(){
-	const newFileReader = document.createElement('input');
-	newFileReader.type='file';
-	newFileReader.id='file-np-input';
-	newFileReader.style.display='none';
-	document.body.appendChild(newFileReader);
-  	document.getElementById('file-np-input').addEventListener("change",readNPSingleFile, false);
+function _np_create() {
+    const newFileReader = document.createElement('input');
+
+    newFileReader.type = 'file';
+    newFileReader.id = 'file-np-input';
+    newFileReader.style.display = 'none';
+
+    document.body.appendChild(newFileReader);
+
+    document.getElementById('file-np-input').addEventListener(
+        "change",
+        readNPSingleFile,
+        false
+    );
 }
+
 _np_create();
 
-function _np_load(){
-	data='';
-	document.getElementById('file-np-input').value="";
-	document.getElementById('file-np-input').click();
+function _np_load() {
+    data = '';
+    document.getElementById('file-np-input').value = "";
+    document.getElementById('file-np-input').click();
 }
 
 function readNPSingleFile(e) {
-	var file = e.target.files[0];
-	if (!file) {
-		return;
-	}
-	var reader = new FileReader();
-	reader.onload = function(e) {
-		var contents = e.target.result;
-		displayNPContents(contents);
-        //document.getElementById('file-np-input').remove();
-	};
-	reader.readAsText(file);
+    var file = e.target.files[0];
+
+    if (!file) {
+        return;
+    }
+
+    var reader = new FileReader();
+
+    reader.onload = function(e) {
+        var contents = e.target.result;
+        displayNPContents(contents);
+    };
+
+    reader.readAsText(file);
 }
 
 function displayNPContents(contents) {
-   data = contents;
-   image='';
-   image=data.split(';');
-   dx=image[0];
-   dy=image[1];
-   bar(display,50,50,320,320,'black');
-   image.splice(0,2);
-	for( y= 0 ;y<dy;y++){
-		for(x=0;x<dx;x++){
-			bar( display, 50+(x*(320/dx)), 50+(y*(320/dy)),320/dx-2,320/dy-2,image[y*dx+x])
-		}
-	}
+    data = contents;
+
+    var loaded = data.split(';');
+
+    dx = parseInt(loaded[0]);
+    dy = parseInt(loaded[1]);
+
+    image = loaded.slice(2);
+
+    redrawAllPixels();
 }
 
-function NPdownload(textToSave, filename, type){
-	var textToSaveAsBlob = new Blob([textToSave], {type:"text/plain"});
-	var textToSaveAsURL = window.URL.createObjectURL(textToSaveAsBlob);
+function NPdownload(textToSave, filename, type) {
+    var textToSaveAsBlob = new Blob([textToSave], {type:"text/plain"});
+    var textToSaveAsURL = window.URL.createObjectURL(textToSaveAsBlob);
 
-	var downloadLink = document.createElement("a");
-	downloadLink.download = filename;
-	downloadLink.innerHTML = "Scarica il file";
-	downloadLink.href = textToSaveAsURL;
-	downloadLink.onclick = destroyClickedElement;
-	downloadLink.style.display = "none";
+    var downloadLink = document.createElement("a");
 
-	document.body.appendChild(downloadLink);
-	downloadLink.click();
+    downloadLink.download = filename;
+    downloadLink.innerHTML = "Scarica il file";
+    downloadLink.href = textToSaveAsURL;
+    downloadLink.onclick = destroyClickedElement;
+    downloadLink.style.display = "none";
+
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
 }
 
-function destroyClickedElement(event){
+function destroyClickedElement(event) {
     document.body.removeChild(event.target);
 }
 
-function risoluzione(x,y){
-	dx=x;
-	dy=y;
-	bar(display,50,50,320,320,'black');
-	cancella();
+function risoluzione(x, y) {
+    dx = x;
+    dy = y;
+    cancella();
 }
 
-function cancella(){
-	for( y= 0 ;y<dy;y++){
-		for(x=0;x<dx;x++){
-    		bar( display, 50+(x*(320/dx)), 50+(y*(320/dy)),320/dx-2,320/dy-2,rgb(255,255,255));
-    		image[y*dx+x]='white';
-    	}
+function cellRect(x, y) {
+    var x0 = Math.round(GRID_X + (x * GRID_SIZE) / dx);
+    var y0 = Math.round(GRID_Y + (y * GRID_SIZE) / dy);
+
+    var x1 = Math.round(GRID_X + ((x + 1) * GRID_SIZE) / dx);
+    var y1 = Math.round(GRID_Y + ((y + 1) * GRID_SIZE) / dy);
+
+    return {
+        x: x0,
+        y: y0,
+
+        fullw: Math.max(1, x1 - x0),
+        fullh: Math.max(1, y1 - y0),
+
+        w: Math.max(1, x1 - x0 - 1),
+        h: Math.max(1, y1 - y0 - 1)
+    };
+}
+
+function drawPixelCell(x, y, col) {
+    var r = cellRect(x, y);
+    bar(display, r.x, r.y, r.w, r.h, col);
+}
+
+function getMouseCell() {
+    for (var y = 0; y < dy; y++) {
+        for (var x = 0; x < dx; x++) {
+            var r = cellRect(x, y);
+
+            if (
+                mouseX >= r.x &&
+                mouseX < r.x + r.fullw &&
+                mouseY >= r.y &&
+                mouseY < r.y + r.fullh
+            ) {
+                return { x: x, y: y };
+            }
+        }
+    }
+
+    return null;
+}
+
+function redrawAllPixels() {
+    bar(display, GRID_X, GRID_Y, GRID_SIZE, GRID_SIZE, 'black');
+
+    for (var yy = 0; yy < dy; yy++) {
+        for (var xx = 0; xx < dx; xx++) {
+            var c = image[yy * dx + xx];
+
+            if (!c || c === 'undefined') {
+                c = 'white';
+            }
+
+            image[yy * dx + xx] = c;
+            drawPixelCell(xx, yy, c);
+        }
     }
 }
 
-function salva(){
-	data='';
-	data=dx+';';
-	data=data+dy+';';
-    for( y= 0 ;y<dy;y++){
-		for(x=0;x<dy;x++){
-    		data=data+image[y*dx+x]+';';
-    	}
-    }
-    NPdownload(data,"file.pixelart",'text');
-}
+function cancella() {
+    bar(display, GRID_X, GRID_Y, GRID_SIZE, GRID_SIZE, 'black');
 
-function carica(){
-	data='';
-    _np_load();          
-}
- 
+    image = [];
 
-setdisplay(600,400);
-cls(display,0);
-
-for( y= 0 ;y<dy;y++){
-	for(x=0;x<dx;x++){
-    	bar( display, 50+(x*(320/dx)), 50+(y*(320/dy)),320/dx-2,320/dy-2,rgb(255,255,255))
-        image[y*dx+x]='white';
+    for (var yy = 0; yy < dy; yy++) {
+        for (var xx = 0; xx < dx; xx++) {
+            drawPixelCell(xx, yy, rgb(255,255,255));
+            image[yy * dx + xx] = 'white';
+        }
     }
 }
 
-var bcolor=Array();
-/*
-bcolor[0]='aqua';	
-bcolor[1]='black';	
-bcolor[2]='blue';
-bcolor[3]='fuchsia';	
-bcolor[4]='gray';	
-bcolor[5]='green';	
-bcolor[6]='lime';	
-bcolor[7]='maroon';	
-bcolor[8]='navy';	
-bcolor[9]='olive';
-bcolor[10]='purple';	
-bcolor[11]='red';	
-bcolor[12]='silver';	
-bcolor[13]='teal';	
-bcolor[14]='white';	
-bcolor[15]='yellow';
-bcolor[16]='Tomato';
-bcolor[17]='Orange';
-bcolor[18]='DodgerBlue';
-bcolor[19]='MediumSeaGreen';
-bcolor[20]='Gray';
-bcolor[21]='SlateBlue';
-bcolor[22]='Violet';
-bcolor[23]='LightGray';
-*/
-bcolor[0]='AliceBlue';
-bcolor[1]='AntiqueWhite';
-bcolor[2]='Aqua';
-bcolor[3]='Aquamarine';
-bcolor[4]='Azure';
-bcolor[5]='Beige';
-bcolor[6]='Bisque';
-bcolor[7]='Black';
-bcolor[8]='BlanchedAlmond';
-bcolor[9]='Blue';
-bcolor[10]='BlueViolet';
-bcolor[11]='Brown';
-bcolor[12]='BurlyWood';
-bcolor[13]='CadetBlue';
-bcolor[14]='Chartreuse';
-bcolor[15]='Chocolate';
-bcolor[16]='Coral';
-bcolor[17]='CornflowerBlue';
-bcolor[18]='Cornsilk';
-bcolor[19]='Crimson';
-bcolor[20]='Cyan';
-bcolor[21]='DarkBlue';
-bcolor[22]='DarkCyan';
-bcolor[23]='DarkGoldenRod';
-bcolor[24]='DarkGray';
-bcolor[25]='DarkGrey';
-bcolor[26]='DarkGreen';
-bcolor[27]='DarkKhaki';
-bcolor[28]='DarkMagenta';
-bcolor[29]='DarkOliveGreen';
-bcolor[30]='DarkOrange';
-bcolor[31]='DarkOrchid';
-bcolor[32]='DarkRed';
-bcolor[33]='DarkSalmon';
-bcolor[34]='DarkSeaGreen';
-bcolor[35]='DarkSlateBlue';
-bcolor[36]='DarkSlateGray';
-bcolor[37]='DarkSlateGrey';
-bcolor[38]='DarkTurquoise';
-bcolor[39]='DarkViolet';
-bcolor[40]='DeepPink';
-bcolor[41]='DeepSkyBlue';
-bcolor[42]='DimGray';
-bcolor[43]='DimGrey';
-bcolor[44]='DodgerBlue';
-bcolor[45]='FireBrick';
-bcolor[46]='FloralWhite';
-bcolor[47]='ForestGreen';
-bcolor[48]='Fuchsia';
-bcolor[49]='Gainsboro';
-bcolor[50]='GhostWhite';
-bcolor[51]='Gold';
-bcolor[52]='GoldenRod';
-bcolor[53]='Gray';
-bcolor[54]='Grey';
-bcolor[55]='Green';
-bcolor[56]='GreenYellow';
-bcolor[57]='HoneyDew';
-bcolor[58]='HotPink';
-bcolor[59]='IndianRed';
-bcolor[60]='Indigo';
-bcolor[61]='Ivory';
-bcolor[62]='Khaki';
-bcolor[63]='Lavender';
-bcolor[64]='LavenderBlush';
-bcolor[65]='LawnGreen';
-bcolor[66]='LemonChiffon';
-bcolor[67]='LightBlue';
-bcolor[68]='LightCoral';
-bcolor[69]='LightCyan';
-bcolor[70]='LightGoldenRodYellow';
-bcolor[71]='LightGray';
-bcolor[72]='LightGrey';
-bcolor[73]='LightGreen';
-bcolor[74]='LightPink';
-bcolor[75]='LightSalmon';
-bcolor[76]='LightSeaGreen';
-bcolor[77]='LightSkyBlue';
-bcolor[78]='LightSlateGray';
-bcolor[79]='LightSlateGrey';
-bcolor[80]='LightSteelBlue';
-bcolor[81]='LightYellow';
-bcolor[82]='Lime';
-bcolor[83]='LimeGreen';
-bcolor[84]='Linen';
-bcolor[85]='Magenta';
-bcolor[86]='Maroon';
-bcolor[87]='MediumAquaMarine';
-bcolor[88]='MediumBlue';
-bcolor[89]='MediumOrchid';
-bcolor[90]='MediumPurple';
-bcolor[91]='MediumSeaGreen';
-bcolor[92]='MediumSlateBlue';
-bcolor[93]='MediumSpringGreen';
-bcolor[94]='MediumTurquoise';
-bcolor[95]='MediumVioletRed';
-bcolor[96]='MidnightBlue';
-bcolor[97]='MintCream';
-bcolor[98]='MistyRose';
-bcolor[99]='Moccasin';
-bcolor[100]='NavajoWhite';
-bcolor[101]='Navy';
-bcolor[102]='OldLace';
-bcolor[103]='Olive';
-bcolor[104]='OliveDrab';
-bcolor[105]='Orange';
-bcolor[106]='OrangeRed';
-bcolor[107]='Orchid';
-bcolor[108]='PaleGoldenRod';
-bcolor[109]='PaleGreen';
-bcolor[110]='PaleTurquoise';
-bcolor[111]='PaleVioletRed';
-bcolor[112]='PapayaWhip';
-bcolor[113]='PeachPuff';
-bcolor[114]='Peru';
-bcolor[115]='Pink';
-bcolor[116]='Plum';
-bcolor[117]='PowderBlue';
-bcolor[118]='Purple';
-bcolor[119]='RebeccaPurple';
-bcolor[120]='Red';
-bcolor[121]='RosyBrown';
-bcolor[122]='RoyalBlue';
-bcolor[123]='SaddleBrown';
-bcolor[124]='Salmon';
-bcolor[125]='SandyBrown';
-bcolor[126]='SeaGreen';
-bcolor[127]='SeaShell';
-bcolor[128]='Sienna';
-bcolor[129]='Silver';
-bcolor[130]='SkyBlue';
-bcolor[131]='SlateBlue';
-bcolor[132]='SlateGray';
-bcolor[133]='SlateGrey';
-bcolor[134]='Snow';
-bcolor[135]='SpringGreen';
-bcolor[136]='SteelBlue';
-bcolor[137]='Tan';
-bcolor[138]='Teal';
-bcolor[139]='Thistle';
-bcolor[140]='Tomato';
-bcolor[141]='Turquoise';
-bcolor[142]='Violet';
-bcolor[143]='Wheat';
-bcolor[144]='White';
-bcolor[145]='Color Mixer';
-bcolor[146]='Color Picker';
-bcolor[147]='WhiteSmoke';
-bcolor[148]='Yellow';
-bcolor[149]='YellowGreen';
-bcolor[150]='#ff0000';
-bcolor[151]='#00ff00';
-bcolor[152]='#0000ff';
-bcolor[153]='#ff00ff';
-bcolor[154]='#00ffff';
-bcolor[155]='#ffff00';
-bcolor[156]='#800000';
-bcolor[157]='#008000';
-bcolor[158]='#000080';
-//bcolor[159]='#800080';
-bcolor[159]='rgba(255,0,255,1)';
+function salva() {
+    data = '';
 
+    data = dx + ';';
+    data = data + dy + ';';
 
-var i=0;
-for( y= 0 ;y<20;y++){
-	for(x=0;x<8;x++){
-    	bar( display, 450+(x*13), 50+(y*13),11,11,bcolor[i]);
-		i++;
+    for (var yy = 0; yy < dy; yy++) {
+        for (var xx = 0; xx < dx; xx++) {
+            data = data + image[yy * dx + xx] + ';';
+        }
+    }
+
+    NPdownload(data, "file.pixelart", 'text');
+}
+
+function carica() {
+    data = '';
+    _np_load();
+}
+
+function mix(a, b, t) {
+    return Math.round(a + (b - a) * t);
+}
+
+function rgbArrayToHex(c) {
+    return rgb(c[0], c[1], c[2]);
+}
+
+function mixColor(c1, c2, t) {
+    return rgb(
+        mix(c1[0], c2[0], t),
+        mix(c1[1], c2[1], t),
+        mix(c1[2], c2[2], t)
+    );
+}
+
+function buildPalette() {
+    var bases = [
+        [255,255,255],
+        [255,0,0],
+        [255,128,0],
+        [255,255,0],
+        [0,255,0],
+        [0,255,255],
+        [0,128,255],
+        [0,0,255],
+        [160,0,255],
+        [255,0,255]
+    ];
+
+    paletteColors = [];
+
+    for (var x = 0; x < PALETTE_COLS; x++) {
+        paletteColors[x] = [];
+
+        for (var y = 0; y < PALETTE_ROWS; y++) {
+            var t = y / (PALETTE_ROWS - 1);
+
+            if (x === 0) {
+                var g = Math.round(255 * (1 - t));
+                paletteColors[x][y] = rgb(g, g, g);
+            } else {
+                if (t <= 0.5) {
+                    paletteColors[x][y] = mixColor(
+                        [255,255,255],
+                        bases[x],
+                        t * 2
+                    );
+                } else {
+                    paletteColors[x][y] = mixColor(
+                        bases[x],
+                        [0,0,0],
+                        (t - 0.5) * 2
+                    );
+                }
+            }
+        }
     }
 }
 
-color=(rgb(255,0,0));
-var data='';
+function drawPalette() {
+    for (var y = 0; y < PALETTE_ROWS; y++) {
+        for (var x = 0; x < PALETTE_COLS; x++) {
+            var px = PALETTE_X + x * (PALETTE_CELL + PALETTE_GAP);
+            var py = PALETTE_Y + y * (PALETTE_CELL + PALETTE_GAP);
 
+            bar(
+                display,
+                px,
+                py,
+                PALETTE_CELL,
+                PALETTE_CELL,
+                paletteColors[x][y]
+            );
+        }
+    }
+}
+
+function drawSelectedColors() {
+    box(
+        display,
+        COLOR_BOX_X - 3,
+        COLOR_BOX_Y - 3,
+        COLOR_BOX_SIZE + 6,
+        COLOR_BOX_SIZE + 6,
+        "white"
+    );
+
+    bar(
+        display,
+        COLOR_BOX_X,
+        COLOR_BOX_Y,
+        COLOR_BOX_SIZE,
+        COLOR_BOX_SIZE,
+        color
+    );
+
+    box(
+        display,
+        COLOR_BOX_X - 3,
+        COLOR_BOX_Y + COLOR_BOX_GAP - 3,
+        COLOR_BOX_SIZE + 6,
+        COLOR_BOX_SIZE + 6,
+        "white"
+    );
+
+    bar(
+        display,
+        COLOR_BOX_X,
+        COLOR_BOX_Y + COLOR_BOX_GAP,
+        COLOR_BOX_SIZE,
+        COLOR_BOX_SIZE,
+        color2
+    );
+}
+
+function pickPaletteColor(button) {
+    for (var y = 0; y < PALETTE_ROWS; y++) {
+        for (var x = 0; x < PALETTE_COLS; x++) {
+            var px = PALETTE_X + x * (PALETTE_CELL + PALETTE_GAP);
+            var py = PALETTE_Y + y * (PALETTE_CELL + PALETTE_GAP);
+
+            if (
+                mouseX >= px &&
+                mouseX < px + PALETTE_CELL &&
+                mouseY >= py &&
+                mouseY < py + PALETTE_CELL
+            ) {
+                if (button === 1) {
+                    color = paletteColors[x][y];
+                }
+
+                if (button === 3) {
+                    color2 = paletteColors[x][y];
+                }
+
+                return;
+            }
+        }
+    }
+}
+
+function paintGrid(button) {
+    var cell = getMouseCell();
+
+    if (!cell) {
+        return;
+    }
+
+    var c = button === 3 ? color2 : color;
+
+    drawPixelCell(cell.x, cell.y, c);
+
+    image[cell.y * dx + cell.x] = c;
+}
+
+setdisplay(700,420);
+
+display.oncontextmenu = function(e){
+    e.preventDefault();
+    return false;
+};
+
+display.addEventListener('contextmenu', function(e){
+    e.preventDefault();
+    return false;
+}, false);
+
+cls(display, 0);
+
+buildPalette();
+drawPalette();
+cancella();
 
 function update() {
-  
-	if (dx<=16){
-		if(mousezone(50,50,320,320)){
-			if (mouseB == 1){
-				var x =parseInt((mouseX - 50 - (80/dx))/(320/dx));
-				var y =parseInt((mouseY - 50 - (80/dy))/(320/dy));
-				bar( display, 50+(x*(320/dx)), 50+(y*(320/dy)),320/dx-2,320/dx-2,color ) ;
-				image[y*dx+x]=color;
-			}
-		}
-	}
-	else{
-		if(mousezone(50,50,320+(320/dx),320+(320/dy))){
-			if (mouseB == 1){
-				var x =parseInt((mouseX - 50 - (320/dx))/(320/dx));
-				var y =parseInt((mouseY - 50 - (320/dy))/(320/dy));
-				bar( display, 50+(x*(320/dx)), 50+(y*(320/dy)),320/dx-2,320/dx-2,color ) ;
-				image[y*dx+x]=color;
-			}
-		}
-	 }
+    if (mousezone(GRID_X, GRID_Y, GRID_SIZE, GRID_SIZE)) {
+        if (mouseB === 1 || mouseB === 3) {
+            paintGrid(mouseB);
+        }
+    }
 
- 	if(mousezone(450,50,106,263)){
-   		if (mouseB == 1){
-          	var x =parseInt((mouseX -450-7) /13);
-          	var y =parseInt((mouseY -50-7) /13);
-	    	color=getpixel(display, 450+(x*13), 50+(y*13));
-        } 
-    }  
-    
-	box(display,48,48,322,322,"white");
-	box(display,448,48,106,263,"white");
-	box(display,399,49,42,42,"white");	
-	bar(display,400,50,40,40,color);	
+    if (mousezone(PALETTE_X, PALETTE_Y, PALETTE_W, PALETTE_H)) {
+        if (mouseB === 1 || mouseB === 3) {
+            pickPaletteColor(mouseB);
+        }
+    }
+
+    box(
+        display,
+        GRID_X - 2,
+        GRID_Y - 2,
+        GRID_SIZE + 4,
+        GRID_SIZE + 4,
+        "white"
+    );
+
+    box(
+        display,
+        PALETTE_X - 2,
+        PALETTE_Y - 2,
+        PALETTE_W + 4,
+        PALETTE_H + 4,
+        "white"
+    );
+
+    drawSelectedColors();
 }
 
+function analyzeImage() {
+    var colore = '';
+    var volte = 0;
+    var n = 0;
 
-function analyzeImage(){
-    var colore='';
-    var volte=0;
-    var n=0;
-   	var s=createsurface(480 ,16 * dy + 30);
+    var s = createsurface(480, 16 * dy + 30);
 
-    text ( s, 50, 18,18, "black", "analisi Immagine");
+    text(s, 50, 18, 18, "black", "analisi Immagine");
 
-	for( y= 0 ;y<dy;y++){
-        var n=0;
-        text ( s, 5, 25+(y*16)+8, 12, 'black', y);
-        colore=image[y*dx];
-        volte=0;
-        
-		for(x=0;x<dx;x++){
-    		if (colore !=image[y*dx+x]){
-                text ( s, 50+n, 25+(y*16)+8, 12, 'black', volte);
-                n=n+16;
-                bar( s, 50+n, 25+(y*16),14,14,colore);
-                box( s, 50+n, 25+(y*16),14,14,'black');
-                n=n+ 20;
-                volte=1;
-                colore=image[y*dx+x];
-            }
-            else {
+    for (var yy = 0; yy < dy; yy++) {
+        n = 0;
+
+        text(s, 5, 25 + (yy * 16) + 8, 12, 'black', yy);
+
+        colore = image[yy * dx];
+        volte = 0;
+
+        for (var xx = 0; xx < dx; xx++) {
+            if (colore != image[yy * dx + xx]) {
+                text(s, 50 + n, 25 + (yy * 16) + 8, 12, 'black', volte);
+
+                n = n + 16;
+
+                bar(s, 50 + n, 25 + (yy * 16), 14, 14, colore);
+                box(s, 50 + n, 25 + (yy * 16), 14, 14, 'black');
+
+                n = n + 20;
+
+                volte = 1;
+                colore = image[yy * dx + xx];
+            } else {
                 volte++;
             }
-    	}
-        text ( s, 50+n, 25+(y*16)+8, 12, 'black', volte);
-        n=n+16;
-        bar( s, 50+n, 25+(y*16), 14, 14, colore);
-        box( s, 50+n, 25+(y*16), 14, 14, "black");
-    } 
-	var dataURL =s.toDataURL();
+        }
 
-	var windowContent = '<!DOCTYPE html>';
-	windowContent += '<html>';
-	windowContent += '<head><title>Print analisi</title></head>';
-	windowContent += '<body>';
-	windowContent += '<img src="' + dataURL + '">';
-	windowContent += '</body>';
-	windowContent += '</html>';
+        text(s, 50 + n, 25 + (yy * 16) + 8, 12, 'black', volte);
 
-	var printWin = window.open();
-	printWin.document.open();
-	printWin.document.write(windowContent);
-	printWin.document.close();
-	printWin.focus();
-	printWin.onload=function(){printWin.print();printWin.close();}
+        n = n + 16;
+
+        bar(s, 50 + n, 25 + (yy * 16), 14, 14, colore);
+        box(s, 50 + n, 25 + (yy * 16), 14, 14, "black");
+    }
+
+    var dataURL = s.toDataURL();
+
+    var windowContent = '<!DOCTYPE html>';
+    windowContent += '<html>';
+    windowContent += '<head><title>Print analisi</title></head>';
+    windowContent += '<body>';
+    windowContent += '<img src="' + dataURL + '">';
+    windowContent += '</body>';
+    windowContent += '</html>';
+
+    var printWin = window.open();
+
+    printWin.document.open();
+    printWin.document.write(windowContent);
+    printWin.document.close();
+    printWin.focus();
+
+    printWin.onload = function(){
+        printWin.print();
+        printWin.close();
+    };
 }

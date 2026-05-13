@@ -505,8 +505,8 @@ var mouseB=0;
 
 function handleMouseMove(e) {
     var rect = display.getBoundingClientRect();
-    mouseX = (e.clientX - rect.left) / document.body.style.zoom+7;
-    mouseY = (e.clientY - rect.top) / document.body.style.zoom+7;
+    mouseX = (e.clientX - rect.left) / document.body.style.zoom;
+    mouseY = (e.clientY - rect.top) / document.body.style.zoom;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------
  
