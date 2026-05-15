@@ -15,7 +15,7 @@ var GRID_X = 50;
 var GRID_Y = 50;
 var GRID_SIZE = 320;
 
-var PALETTE_X = 458;
+var PALETTE_X = 466;
 var PALETTE_Y = 50;
 var PALETTE_CELL = 18;
 var PALETTE_GAP = 2;
@@ -380,13 +380,13 @@ function drawPalette() {
     ctx.textAlign = 'center';
     for (var x = 0; x < PALETTE_COLS; x++) {
         var cx = PALETTE_X + x * (PALETTE_CELL + PALETTE_GAP) + PALETTE_CELL / 2;
-        text(display, cx, PALETTE_Y - 4, 10, '#888', String(x));
+        text(display, cx, PALETTE_Y - 4, 10, '#888', String.fromCharCode(65 + x));
     }
 
     ctx.textAlign = 'right';
     for (var y = 0; y < PALETTE_ROWS; y++) {
         var cy = PALETTE_Y + y * (PALETTE_CELL + PALETTE_GAP) + 13;
-        text(display, PALETTE_X - 4, cy, 10, '#888', String.fromCharCode(65 + y));
+        text(display, PALETTE_X - 4, cy, 10, '#888', String(y));
     }
 
     ctx.textAlign = 'start';
